@@ -1,18 +1,19 @@
 {
-  "name": "apiwanway",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "axios": "^0.24.0",
-    "crypto-js": "^4.0.0",
-    "dotenv": "^16.0.0",
-    "moment": "^2.29.1",
-    "xml2js": "^0.4.23"
-  }
+	"name": "apiwanway",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"axios": "^0.24.0",
+		"crypto-js": "^4.0.0",
+		"dotenv": "^16.0.0",
+		"moment": "^2.29.1",
+		"xml2js": "^0.4.23"
+	},
+	"Transform": "AWS::Serverless-2016-10-31"
 }
