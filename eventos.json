@@ -1,6 +1,10 @@
 {
   "PA": "Puerta abierta",
+  "PC": "Puerta carga abierta",
   "SOS": "Panico activado",
   "DES": "Desenganche",
-  "OFF": "Bateria desconectada"
+  "OFF": "Bateria desconectada",
+  "CUTOFF": "Corte de combustible",
+  "CUTON": "Reestablecimiento combustible",
+  "JAM": "Alerta de jammering"
 }
