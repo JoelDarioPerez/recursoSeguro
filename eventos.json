@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "PA": "Puerta abierta",
   "PC": "Puerta carga abierta",
   "SOS": "Panico activado",
@@ -9,15 +8,3 @@
   "CUTON": "Reestablecimiento combustible",
   "JAM": "Alerta de jammering"
 }
-=======
-  "PDA": "Puerta conductor abierta",
-  "PIA": "Puerta acompañante abierta",
-  "SOS": "Panico activado",
-  "DES": "Desenganche",
-  "OFF": "Bateria desconectada",
-  "OILOFF": "Corte de combustible",
-  "OILON": "Reestablecimiento de combustible",
-  "JAM": "ALERTA DE JAMMER"
-
-}
->>>>>>> 94fc4cd (optimizacion del código)
