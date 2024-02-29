@@ -6,162 +6,161 @@ import { parseString } from "xml2js";
 
 dotenv.config();
 
+// Constantes
 const apiid = process.env.APPID;
 const secretKey = process.env.SECRETKEY;
 const url = process.env.URLASSISTCARGO;
 const password = process.env.PASSWORD;
 const userId = process.env.USUARIOASSISTCARGO;
-
-const apiUrl = process.env.APIURL; // Reemplaza con el valor correcto
 const account = "Romanesco";
-const imei = ["013227000017073", "866551039964270"];
+const apiUrl = process.env.APIURL;
 
-async function getTokenWanWay() {
-  try {
-    const currentTimeUnix = Math.floor(new Date().getTime() / 1000);
-    const signatureString = CryptoJS.MD5(secretKey) + currentTimeUnix;
-    const twiceEncrypt = CryptoJS.MD5(signatureString).toString();
+// Variables globales
+let accessToken = null;
+let tokenRecursoSeguro = null;
+let imei = ["013227000017073", "866551039964270"];
 
-    const datos = {
-      appid: apiid,
-      time: currentTimeUnix,
-      signature: twiceEncrypt
-    };
+// Funciones
 
-    console.log(datos);
+// Autenticación WanWay
+function obtenerTokenWanWay() {
+  const currentTimeUnix = Math.floor(new Date().getTime() / 1000);
+  const signatureString = CryptoJS.MD5(secretKey) + currentTimeUnix;
+  const twiceEncrypt = CryptoJS.MD5(signatureString).toString();
 
-    const response = await axios.post(`${apiUrl}/auth`, datos);
-    const accessToken = response.data.accessToken;
-    console.log("Token obtenido:", accessToken);
-    return accessToken;
-  } catch (error) {
-    console.error("Error en la solicitud de autenticación:", error);
-    throw error;
-  }
+  const datos = {
+    appid: apiid,
+    time: currentTimeUnix,
+    signature: twiceEncrypt
+  };
+
+  axios
+    .post(`${apiUrl}/auth`, datos)
+    .then((response) => {
+      accessToken = response.data.accessToken;
+      console.log("Token WanWay obtenido:", accessToken);
+    })
+    .catch((error) => {
+      console.error("Error en la autenticación WanWay:", error);
+    });
 }
 
-async function getTokenRecursoSeguro() {
-  try {
+// Autenticación Recurso Seguro
+function obtenerTokenRecursoSeguro() {
+  const xmlData = `
+    <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+      xmlns:tem="http://tempuri.org/">
+      <soapenv:Header/>
+      <soapenv:Body>
+        <tem:GetUserToken>
+          <tem:userId>${userId}</tem:userId>
+          <tem:password>${password}</tem:password>
+        </tem:GetUserToken>
+      </soapenv:Body>
+    </soapenv:Envelope>
+  `;
+
+  const config = {
+    headers: {
+      "Content-Type": "text/xml; charset=utf-8",
+      SOAPAction: `http://tempuri.org/IRCService/GetUserToken`
+    },
+  };
+
+  axios
+    .post(url, xmlData, config)
+    .then((response) => {
+      parseString(response.data, { explicitArray: false }, (err, result) => {
+        if (err) {
+          console.error("Error al analizar la respuesta XML:", err);
+        } else {
+          const aTokenValue = result?.["s:Envelope"]?.["s:Body"]?.GetUserTokenResponse
+            ?.GetUserTokenResult?.["a:token"];
+
+          if (aTokenValue) {
+            tokenRecursoSeguro = aTokenValue;
+            console.log("Token Recurso Seguro obtenido:", tokenRecursoSeguro);
+          } else {
+            console.error("No se pudo encontrar 'a:token' en la respuesta.");
+          }
+        }
+      });
+    })
+    .catch((error) => {
+      console.error("Error en la autenticación Recurso Seguro:", error);
+    });
+}
+
+// Envío de posiciones
+function sendPositions(data) {
+  function date(unixTimestamp) {
+    const momentObject = moment.unix(unixTimestamp);
+    return momentObject.format("YYYY-MM-DDTHH:mm:ss");
+  }
+
+  data.data.forEach((position) => {
+    const fecha = date(position.gpsTime);
     const xmlData = `
       <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-        xmlns:tem="http://tempuri.org/">
+        xmlns:tem="http://tempuri.org/"
+        xmlns:iron="http://schemas.datacontract.org/2004/07/IronTracking">
         <soapenv:Header/>
         <soapenv:Body>
-          <tem:GetUserToken>
-            <tem:userId>${userId}</tem:userId>
-            <tem:password>${password}</tem:password>
-          </tem:GetUserToken>
+          <tem:GPSAssetTracking>
+            <tem:token>${tokenRecursoSeguro}</tem:token>
+            <tem:events>
+              <iron:Event>
+                <!-- Detalles omitidos para simplificar el ejemplo -->
+              </iron:Event>
+            </tem:events>
+          </tem:GPSAssetTracking>
         </soapenv:Body>
       </soapenv:Envelope>
     `;
 
-    const config = {
-      headers: {
-        "Content-Type": "text/xml; charset=utf-8",
-        SOAPAction: `http://tempuri.org/IRCService/GetUserToken`
-      }
-    };
-
-    const response = await axios.post(url, xmlData, config);
-    const tokenRecursoSeguro = response.data["s:Envelope"]["s:Body"]["GetUserTokenResponse"]["GetUserTokenResult"]["a:token"];
-    
-    console.log("Token recurso Seguro:", tokenRecursoSeguro);
-    return tokenRecursoSeguro;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+    // Enviar la posición
+    axios
+      .post(url, xmlData, {
+        headers: {
+          "Content-Type": "text/xml; charset=utf-8",
+          SOAPAction: `http://tempuri.org/IRCService/GPSAssetTracking`
+        },
+      })
+      .then((response) => {
+        console.log("Posición enviada con éxito. Estado:", response.status);
+      })
+      .catch((error) => {
+        console.error("Error al enviar la posición:", error);
+      });
+  });
 }
 
-function formatDateTime(unixTimestamp) {
-  const momentObject = moment.unix(unixTimestamp);
-  return momentObject.format("YYYY-MM-DDTHH:mm:ss");
+// Consulta de posiciones
+function consultaPosiciones() {
+  const dirConsulta = `${apiUrl}/device/status?accessToken=${accessToken}&imei=${imei}&account=${account}`;
+  axios
+    .get(dirConsulta)
+    .then((response) => {
+      const positionsData = response.data;
+      console.log("Datos de posición obtenidos:", positionsData);
+
+      // Llamar a la función para enviar las posiciones
+      sendPositions(positionsData);
+    })
+    .catch((error) => {
+      console.error("Error en la solicitud de estado del dispositivo:", error);
+    });
 }
 
-function buildXmlData(position, tokenRecursoSeguro) {
-  const fecha = formatDateTime(position.gpsTime);
-  return `
-    <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-      xmlns:tem="http://tempuri.org/"
-      xmlns:iron="http://schemas.datacontract.org/2004/07/IronTracking">
-      <soapenv:Header/>
-      <soapenv:Body>
-        <tem:GPSAssetTracking>
-          <tem:token>${tokenRecursoSeguro}</tem:token>
-          <tem:events>
-            <iron:Event>
-              <iron:altitude></iron:altitude>
-              <iron:asset>${position.licenseNumber}</iron:asset>
-              <iron:battery></iron:battery>
-              <iron:code>${position.code}</iron:code>
-              <iron:course>${position.course}</iron:course>
-              <iron:customer>
-                <iron:id></iron:id>
-                <iron:name></iron:name>
-              </iron:customer>
-              <iron:date>${fecha}</iron:date>
-              <iron:direction>0</iron:direction>
-              <iron:humidity>0</iron:humidity>
-              <iron:ignition>0</iron:ignition>
-              <iron:latitude>${position.lat}</iron:latitude>
-              <iron:longitude>${position.lng}</iron:longitude>
-              <iron:odometer/>
-              <iron:serialNumber></iron:serialNumber>
-              <iron:shipment/>
-              <iron:speed>${position.speed}</iron:speed>
-              <iron:temperature></iron:temperature>
-            </iron:Event>
-          </tem:events>
-        </tem:GPSAssetTracking>
-      </soapenv:Body>
-    </soapenv:Envelope>
-  `;
+// Función principal
+function main() {
+  obtenerTokenWanWay();
+  obtenerTokenRecursoSeguro();
+
+  // Programar actualizaciones periódicas
+  setInterval(obtenerTokenWanWay, 7200000);  // Cada 2 horas
+  setInterval(obtenerTokenRecursoSeguro, 86400000);  // Cada 24 horas
+  setInterval(consultaPosiciones, 30000);  // Cada 30 segundos
 }
 
-async function sendPositions(positionsData, tokenRecursoSeguro) {
-  try {
-    for (const position of positionsData.data) {
-      const xmlData = buildXmlData(position, tokenRecursoSeguro);
-      await sendData(xmlData);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-async function sendData(data) {
-  try {
-    const config = {
-      headers: {
-        "Content-Type": "text/xml; charset=utf-8",
-        SOAPAction: `http://tempuri.org/IRCService/GPSAssetTracking`
-      }
-    };
-
-    const response = await axios.post(url, data, config);
-    console.log("Estado de la respuesta:", response.status);
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}
-
-async function consultaPosiciones(accessToken) {
-  try {
-    console.log(`Token ${accessToken} Cuenta:${account}`);
-    const dirConsulta = `${apiUrl}/device/status?accessToken=${accessToken}&imei=${imei}&account=${account}`;
-    const response = await axios.get(dirConsulta);
-    const positionsData = response.data;
-
-    console.log(positionsData);
-    await sendPositions(positionsData, accessToken);
-  } catch (error) {
-    console.error("Error en la solicitud de estado del dispositivo:", error);
-  }
-}
-
-async function main() {
-  try {
-    const accessToken = await getTokenWanWay();
-    const tokenRecursoSeguro = await getTokenRecursoSeg
-  }}
+main();
