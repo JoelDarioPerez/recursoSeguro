@@ -214,15 +214,35 @@ function consultaPosiciones() {
     });
 }
 
+// ...
+
+function kmsRecorridos() {
+  const unixTimestamp = Math.floor(new Date().getTime() / 1000);
+  const startTime = unixTimestamp - 24 * 60 * 60;
+
+  const dirConsulta = `${apiUrl}/device/miles?accessToken=${accessToken}&startTime=${startTime}&endTime=${unixTimestamp}&imei=${imei[0]}`;
+
+  axios
+    .get(dirConsulta)
+    .then((response) => {
+      const kmData = response.data;
+      // Agrega aquí la lógica para trabajar con los datos si es necesario
+      console.log("Datos de kilómetros recorridos:", kmData);
+    })
+    .catch((error) => {
+      console.error("Error en la consulta de kilómetros recorridos:", error);
+    });
+}
+
+// ...
+
 // Función principal
 function main() {
   obtenerTokenWanWay();
   obtenerTokenRecursoSeguro();
-
   // Programar actualizaciones periódicas
   setInterval(obtenerTokenWanWay, 7200000); // Cada 2 horas
   setInterval(obtenerTokenRecursoSeguro, 86400000); // Cada 24 horas
   setInterval(consultaPosiciones, 30000); // Cada 30 segundos
 }
-
 main();

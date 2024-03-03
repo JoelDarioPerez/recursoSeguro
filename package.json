@@ -9,10 +9,12 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@libsql/client": "^0.5.2",
 		"axios": "^0.24.0",
 		"crypto-js": "^4.0.0",
 		"dgram": "^1.0.1",
 		"dotenv": "^16.0.0",
+		"libsql": "^0.3.4",
 		"moment": "^2.29.1",
 		"node-telegram-bot-api": "^0.64.0",
 		"xml2js": "^0.4.23"
