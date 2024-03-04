@@ -8,8 +8,12 @@ const token = process.env.TOKENTELEGRAM;
 // Crea un nuevo bot usando el token
 const bot = new TelegramBot(token, { polling: true });
 
+const client = createClient({
+  url: "http://127.0.0.1:8080",
+});
+
 // Maneja los mensajes de texto
-bot.on("text", (msg) => {
+bot.on("text", async (msg) => {
   const chatId = msg.chat.id;
   const messageText = msg.text;
 
@@ -25,9 +29,18 @@ bot.on("text", (msg) => {
   worksID.container = messageText.split(",")[2].trim();
 
   console.log(worksID);
+
+  try {
+    // Insertar datos en la base de datos
+    await client.query(
+      "INSERT INTO Maersk (Patente, WorkId, Contenedor) VALUES ($1, $2, $3)",
+      [worksID.patente, worksID.workid, worksID.container]
+    );
+
+    console.log("Datos insertados correctamente en la base de datos");
+  } catch (error) {
+    console.error("Error al insertar datos en la base de datos:", error.message);
+  }
 });
 
-const client = createClient({
-  url: "http://127.0.0.1:8080",
-});
 bot;
