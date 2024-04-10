@@ -4,8 +4,7 @@ import dotenv from "dotenv";
 import moment from "moment";
 import { parseString } from "xml2js";
 import dgram from "dgram";
-
-// Tu código usando dgram aquí
+import net from "net";
 
 dotenv.config();
 
@@ -19,14 +18,66 @@ const account = "globaltracker";
 const apiUrl = process.env.APIURL;
 const ipMdlz = process.env.IPMDLZ;
 const puertoMdlz = process.env.PORTMDLZ;
+const port = 3333;
 
 // Variables globales
 let accessToken = null;
 let tokenRecursoSeguro = null;
-let imei = ["013227000017073", "866551039964270"];
+let imei = ["013227000017073"];
+let event = null;
 
 // Funciones
+function listenOnPort(port) {
+  const server = net.createServer((socket) => {
+    console.log(
+      `Cliente conectado desde: ${socket.remoteAddress}:${socket.remotePort}`
+    );
+    // Aquí puedes manejar la lógica de lo que deseas hacer con la conexión entrante
 
+    // Por ejemplo, puedes enviar un mensaje de bienvenida al cliente
+    socket.write("¡Bienvenido al servidor!\n");
+
+    // Manejar los datos enviados por el cliente
+    socket.on("data", (data) => {
+      console.log(`Datos recibidos del cliente: ${data}`);
+      if (data === "1") {
+        event = "PA";
+      } else if (data === "2") {
+        event = "PC";
+      } else if (data === "3") {
+        event = "SOS";
+      } else if (data === "4") {
+        event = "DES";
+      } else if (data === "5") {
+        event = "OFF";
+      } else if (data === "6") {
+        event = "CUTOFF";
+      } else if (data === "7") {
+        event = "CUTON";
+      } else if (data === "8") {
+        event = "JAM";
+      }
+    });
+
+    // Manejar el evento de cierre de conexión
+    socket.on("close", () => {
+      console.log("Cliente desconectado");
+    });
+
+    // Manejar errores de conexión
+    socket.on("error", (err) => {
+      console.error("Error en la conexión:", err);
+    });
+  });
+
+  server.on("error", (err) => {
+    console.error("Error en el servidor:", err);
+  });
+
+  server.listen(port, () => {
+    console.log(`Servidor escuchando en el puerto ${port}`);
+  });
+}
 // Autenticación WanWay
 function obtenerTokenWanWay() {
   const currentTimeUnix = Math.floor(new Date().getTime() / 1000);
@@ -118,7 +169,7 @@ function sendPositions(data) {
               <iron:altitude>0</iron:altitude>
 <iron:asset>${position.licenseNumber}</iron:asset>
 <iron:battery>0</iron:battery>
-<iron:code>1</iron:code>
+<iron:code>${event}</iron:code>
 <iron:course>0</iron:course>
 <iron:customer>
 <iron:id>0</iron:id>
@@ -232,13 +283,9 @@ function consultaPosiciones() {
     });
 }
 
-// ...
-
-// ...
-
-// Función principal
 function main() {
   obtenerTokenWanWay();
+  listenOnPort(port);
   obtenerTokenRecursoSeguro();
   // Programar actualizaciones periódicas
   setInterval(obtenerTokenWanWay, 7200000); // Cada 2 horas

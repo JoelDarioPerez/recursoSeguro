@@ -17,6 +17,9 @@
 		"libsql": "^0.3.4",
 		"moment": "^2.29.1",
 		"node-telegram-bot-api": "^0.64.0",
+		"pg": "^8.11.3",
+		"punycode": "^2.3.1",
+		"sqlite3": "^5.1.7",
 		"xml2js": "^0.4.23"
 	},
 	"Transform": "AWS::Serverless-2016-10-31"
