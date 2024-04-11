@@ -24,7 +24,7 @@ const port = 3333;
 let accessToken = null;
 let tokenRecursoSeguro = null;
 let imei = ["013227000017073"];
-let event = null;
+let event = 0;
 
 // Funciones
 function listenOnPort(port) {
