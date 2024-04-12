@@ -247,24 +247,7 @@ function sendMondelez(data) {
     );
   });
 }
-function kmsRecorridos(imei) {
-  const unixTimestamp = Math.floor(new Date().getTime() / 1000);
-  const startTime = unixTimestamp - 30;
-  array.forEach((imei) => {
-    const dirConsulta = `${apiUrl}/device/miles?accessToken=${accessToken}&startTime=${startTime}&endTime=${unixTimestamp}&imei=${imei}`;
 
-    axios
-      .get(dirConsulta)
-      .then((response) => {
-        const kmData = response.data;
-        // Agrega aquí la lógica para trabajar con los datos si es necesario
-        console.log("Datos de kilómetros recorridos:", kmData);
-      })
-      .catch((error) => {
-        console.error("Error en la consulta de kilómetros recorridos:", error);
-      });
-  });
-}
 // Consulta de posiciones
 function consultaPosiciones() {
   const dirConsulta = `${apiUrl}/device/status?accessToken=${accessToken}&imei=${imei}&account=${account}`;
@@ -276,7 +259,6 @@ function consultaPosiciones() {
       // Llamar a la función para enviar las posiciones
       sendPositions(positionsData);
       sendMondelez(positionsData);
-      kmsRecorridos();
     })
     .catch((error) => {
       console.error("Error en la solicitud de estado del dispositivo:", error);
