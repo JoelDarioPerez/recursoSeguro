@@ -148,7 +148,7 @@ function sendPositions(data) {
               <iron:altitude>0</iron:altitude>
 <iron:asset>${position.licenseNumber}</iron:asset>
 <iron:battery>0</iron:battery>
-<iron:code>${event === null ? "0" : event}</iron:code>
+<iron:code>${event}</iron:code>
 <iron:course>0</iron:course>
 <iron:customer>
 <iron:id>0</iron:id>
