@@ -156,6 +156,7 @@ function sendPositions(data) {
   }
 
   data.data.forEach((position) => {
+    console.log(position);
     const fecha = date(position.gpsTime);
     const xmlData = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
         xmlns:tem="http://tempuri.org/"
