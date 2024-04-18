@@ -32,10 +32,6 @@ function listenOnPort(port) {
     console.log(
       `Cliente conectado desde: ${socket.remoteAddress}:${socket.remotePort}`
     );
-    // Aquí puedes manejar la lógica de lo que deseas hacer con la conexión entrante
-
-    // Por ejemplo, puedes enviar un mensaje de bienvenida al cliente
-    socket.write("¡Bienvenido al servidor!\n");
 
     // Manejar los datos enviados por el cliente
     socket.on("data", (data) => {
