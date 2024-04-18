@@ -36,6 +36,7 @@ function listenOnPort(port) {
     // Manejar los datos enviados por el cliente
     socket.on("data", (data) => {
       console.log(`Datos recibidos del cliente: ${data}`);
+      event = data;
     });
 
     // Manejar el evento de cierre de conexión
