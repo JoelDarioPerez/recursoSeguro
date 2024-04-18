@@ -202,7 +202,7 @@ function sendPositions(data) {
       })
       .then((response) => {
         console.log("Posición enviada con éxito. Estado:", response.status);
-        console.log(response);
+        console.log(xmlData);
       })
       .catch((error) => {
         console.error("Error al enviar la posición:", error);
