@@ -36,23 +36,6 @@ function listenOnPort(port) {
     // Manejar los datos enviados por el cliente
     socket.on("data", (data) => {
       console.log(`Datos recibidos del cliente: ${data}`);
-      if (data === "1") {
-        event = "PA";
-      } else if (data === "2") {
-        event = "PC";
-      } else if (data === "3") {
-        event = "SOS";
-      } else if (data === "4") {
-        event = "DES";
-      } else if (data === "5") {
-        event = "OFF";
-      } else if (data === "6") {
-        event = "CUTOFF";
-      } else if (data === "7") {
-        event = "CUTON";
-      } else if (data === "8") {
-        event = "JAM";
-      }
     });
 
     // Manejar el evento de cierre de conexión
