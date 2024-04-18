@@ -156,7 +156,6 @@ function sendPositions(data) {
   }
 
   data.data.forEach((position) => {
-    console.log(position);
     const fecha = date(position.gpsTime);
     const xmlData = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
         xmlns:tem="http://tempuri.org/"
@@ -203,6 +202,7 @@ function sendPositions(data) {
       })
       .then((response) => {
         console.log("Posición enviada con éxito. Estado:", response.status);
+        console.log(response);
       })
       .catch((error) => {
         console.error("Error al enviar la posición:", error);
