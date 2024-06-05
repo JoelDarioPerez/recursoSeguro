@@ -1,7 +1,6 @@
 {
   "name": "apiwanway",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,5 +24,6 @@
     "whatsapp-web.js": "^1.23.0",
     "qrcode-terminal": "^0.12"
   },
-  "Transform": "AWS::Serverless-2016-10-31"
+  "Transform": "AWS::Serverless-2016-10-31",
+  "description": ""
 }

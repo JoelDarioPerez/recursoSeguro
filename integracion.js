@@ -20,6 +20,19 @@ const ipMdlz = process.env.IPMDLZ;
 const puertoMdlz = process.env.PORTMDLZ;
 const port = 3333;
 
+console.log(`
+apiid = ${apiid}
+secretkey= ${secretKey}
+url = ${url}
+password = ${password}
+userId = ${userId}
+account = ${account}
+apiUrl = ${apiUrl}
+ipMdlz = ${ipMdlz}
+puertoMdlz = ${puertoMdlz}
+port = ${port}
+`);
+
 // Variables globales
 let accessToken = null;
 let tokenRecursoSeguro = null;
