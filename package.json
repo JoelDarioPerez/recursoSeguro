@@ -21,8 +21,8 @@
     "punycode": "^2.3.1",
     "sqlite3": "^5.1.7",
     "xml2js": "^0.4.23",
-    "whatsapp-web.js": "^<latest_version",
-    "qrcode-terminal": "^<latest_version"
+    "whatsapp-web.js": "^<1.23.0",
+    "qrcode-terminal": "^0.12"
   },
   "Transform": "AWS::Serverless-2016-10-31"
 }
