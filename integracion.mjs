@@ -99,6 +99,7 @@ client.on("qr", (qr) => {
 });
 
 // Iniciar el cliente
+client.initialize();
 
 // Autenticación Recurso Seguro
 function obtenerTokenRecursoSeguro() {
@@ -168,7 +169,7 @@ function sendPositions(data) {
         evento = eventoGZKH94;
         break;
       default:
-        evento = "defaultEvent";
+        evento = "0";
     }
     const fecha = date(position.gpsTime);
     const xmlData = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
@@ -281,7 +282,6 @@ function consultaPosiciones() {
 }
 
 function main() {
-  client.initialize();
 
   obtenerTokenWanWay();
   obtenerTokenRecursoSeguro();
