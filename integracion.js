@@ -1,11 +1,13 @@
-const axios = require("axios");
-const CryptoJS = require("crypto-js");
-require("dotenv").config();
-const moment = require("moment");
-const { parseString } = require("xml2js");
-const dgram = require("dgram");
-const { Client } = require("whatsapp-web.js");
-const qrcode = require("qrcode-terminal");
+import axios from "axios";
+import CryptoJS from "crypto-js";
+import dotenv from "dotenv";
+import moment from "moment";
+import { parseString } from "xml2js";
+import dgram from "dgram";
+import { Client } from "whatsapp-web.js";
+import qrcode from "qrcode-terminal";
+
+dotenv.config();
 
 // Constantes
 const apiid = process.env.APPID;
@@ -24,7 +26,7 @@ let accessToken = null;
 let tokenRecursoSeguro = null;
 let imei = ["000009170482863"];
 
-// Crear una nueva instancia del cliente de WhatsApp
+// Crear una nueva instancia del cliente de WhatsApp Web
 const client = new Client();
 
 // Cuando el cliente está listo, ejecutar este código (solo una vez)
@@ -50,7 +52,7 @@ client.on("qr", (qr) => {
   qrcode.generate(qr, { small: true });
 });
 
-// Iniciar el cliente
+// Iniciar el cliente de WhatsApp Web
 client.initialize();
 
 // Autenticación WanWay
