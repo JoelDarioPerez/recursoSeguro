@@ -1,14 +1,11 @@
-import axios from "axios";
-import CryptoJS from "crypto-js";
-import dotenv from "dotenv";
-import moment from "moment";
-import { parseString } from "xml2js";
-import dgram from "dgram";
-import net from "net";
-import { Client } from "whatsapp-web.js";
-import qrcode from "qrcode-terminal";
-
-dotenv.config();
+const axios = require("axios");
+const CryptoJS = require("crypto-js");
+require("dotenv").config();
+const moment = require("moment");
+const { parseString } = require("xml2js");
+const dgram = require("dgram");
+const { Client } = require("whatsapp-web.js");
+const qrcode = require("qrcode-terminal");
 
 // Constantes
 const apiid = process.env.APPID;
@@ -27,7 +24,7 @@ let accessToken = null;
 let tokenRecursoSeguro = null;
 let imei = ["000009170482863"];
 
-// Crear una nueva instancia del cliente
+// Crear una nueva instancia del cliente de WhatsApp
 const client = new Client();
 
 // Cuando el cliente está listo, ejecutar este código (solo una vez)
@@ -78,55 +75,6 @@ function obtenerTokenWanWay() {
       console.error("Error en la autenticación WanWay:", error);
     });
 }
-
-// Crear una nueva instancia del cliente
-const client = new Client();
-
-let eventoFXRX62 = "0";
-let eventoGKGH77 = "0";
-let eventoGZKH94 = "0";
-
-// Cuando el cliente está listo, ejecutar este código (solo una vez)
-client.once("ready", () => {
-  console.log("¡El cliente está listo!");
-});
-
-// Escuchar todos los mensajes entrantes
-client.on("message_create", (message) => {
-  if (message.body.toUpperCase().startsWith("FXRX62")) {
-    let arraydeDatos = message.body.split(",");
-    eventoFXRX62 = arraydeDatos[1];
-    console.log(arraydeDatos);
-    client.sendMessage(
-      message.from,
-      `Evento FXRX62 recibido con datos: ${arraydeDatos[1]}`
-    );
-  } else if (message.body.toUpperCase().startsWith("GKGH77")) {
-    let arraydeDatos = message.body.split(",");
-    eventoGKGH77 = arraydeDatos[1];
-    client.sendMessage(
-      message.from,
-      `Evento GKGH77 recibido con datos: ${arraydeDatos[1]}`
-    );
-  } else if (message.body.toUpperCase().startsWith("GZKH94")) {
-    let arraydeDatos = message.body.split(",");
-    eventoGZKH94 = arraydeDatos[1];
-    client.sendMessage(
-      message.from,
-      `Evento GZKH94 recibido con datos: ${arraydeDatos[1]}`
-    );
-  } else {
-    console.log("Mensaje random");
-  }
-});
-
-// Cuando el cliente recibe el código QR
-client.on("qr", (qr) => {
-  qrcode.generate(qr, { small: true });
-});
-
-// Iniciar el cliente
-client.initialize();
 
 // Autenticación Recurso Seguro
 function obtenerTokenRecursoSeguro() {
@@ -251,6 +199,7 @@ function sendPositions(data) {
       });
   });
 }
+
 function sendMondelez(data) {
   function fecha(data) {
     const date = data.gpsTime;
