@@ -1,26 +1,28 @@
 {
-	"name": "apiwanway",
-	"version": "1.0.0",
-	"description": "",
-	"main": "index.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"author": "",
-	"license": "ISC",
-	"dependencies": {
-		"@libsql/client": "^0.5.2",
-		"axios": "^0.24.0",
-		"crypto-js": "^4.0.0",
-		"dgram": "^1.0.1",
-		"dotenv": "^16.0.0",
-		"libsql": "^0.3.4",
-		"moment": "^2.29.1",
-		"node-telegram-bot-api": "^0.64.0",
-		"pg": "^8.11.3",
-		"punycode": "^2.3.1",
-		"sqlite3": "^5.1.7",
-		"xml2js": "^0.4.23"
-	},
-	"Transform": "AWS::Serverless-2016-10-31"
+  "name": "apiwanway",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@libsql/client": "^0.5.2",
+    "axios": "^0.24.0",
+    "crypto-js": "^4.0.0",
+    "dgram": "^1.0.1",
+    "dotenv": "^16.0.0",
+    "libsql": "^0.3.4",
+    "moment": "^2.29.1",
+    "node-telegram-bot-api": "^0.64.0",
+    "pg": "^8.11.3",
+    "punycode": "^2.3.1",
+    "sqlite3": "^5.1.7",
+    "xml2js": "^0.4.23",
+    "whatsapp-web.js": "^<latest_version",
+    "qrcode-terminal": "^<latest_version"
+  },
+  "Transform": "AWS::Serverless-2016-10-31"
 }

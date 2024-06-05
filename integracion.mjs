@@ -5,6 +5,8 @@ import moment from "moment";
 import { parseString } from "xml2js";
 import dgram from "dgram";
 import net from "net";
+import { Client } from "whatsapp-web.js";
+import qrcode from "qrcode-terminal";
 
 dotenv.config();
 
@@ -24,40 +26,9 @@ const port = 3333;
 let accessToken = null;
 let tokenRecursoSeguro = null;
 let imei = ["000009170482863"];
-let event = null;
 
-// Funciones
-function listenOnPort(port) {
-  const server = net.createServer((socket) => {
-    console.log(
-      `Cliente conectado desde: ${socket.remoteAddress}:${socket.remotePort}`
-    );
+//
 
-    // Manejar los datos enviados por el cliente
-    socket.on("data", (data) => {
-      console.log(`Datos recibidos del cliente: ${data}`);
-      event = data;
-    });
-
-    // Manejar el evento de cierre de conexión
-    socket.on("close", () => {
-      console.log("Cliente desconectado");
-    });
-
-    // Manejar errores de conexión
-    socket.on("error", (err) => {
-      console.error("Error en la conexión:", err);
-    });
-  });
-
-  server.on("error", (err) => {
-    console.error("Error en el servidor:", err);
-  });
-
-  server.listen(port, () => {
-    console.log(`Servidor escuchando en el puerto ${port}`);
-  });
-}
 // Autenticación WanWay
 function obtenerTokenWanWay() {
   const currentTimeUnix = Math.floor(new Date().getTime() / 1000);
@@ -80,6 +51,54 @@ function obtenerTokenWanWay() {
       console.error("Error en la autenticación WanWay:", error);
     });
 }
+
+// Crear una nueva instancia del cliente
+const client = new Client();
+
+let eventoFXRX62 = "0";
+let eventoGKGH77 = "0";
+let eventoGZKH94 = "0";
+
+// Cuando el cliente está listo, ejecutar este código (solo una vez)
+client.once("ready", () => {
+  console.log("¡El cliente está listo!");
+});
+
+// Escuchar todos los mensajes entrantes
+client.on("message_create", (message) => {
+  if (message.body.toUpperCase().startsWith("FXRX62")) {
+    let arraydeDatos = message.body.split(",");
+    eventoFXRX62 = arraydeDatos[1];
+    console.log(arraydeDatos);
+    client.sendMessage(
+      message.from,
+      `Evento FXRX62 recibido con datos: ${arraydeDatos[1]}`
+    );
+  } else if (message.body.toUpperCase().startsWith("GKGH77")) {
+    let arraydeDatos = message.body.split(",");
+    eventoGKGH77 = arraydeDatos[1];
+    client.sendMessage(
+      message.from,
+      `Evento GKGH77 recibido con datos: ${arraydeDatos[1]}`
+    );
+  } else if (message.body.toUpperCase().startsWith("GZKH94")) {
+    let arraydeDatos = message.body.split(",");
+    eventoGZKH94 = arraydeDatos[1];
+    client.sendMessage(
+      message.from,
+      `Evento GZKH94 recibido con datos: ${arraydeDatos[1]}`
+    );
+  } else {
+    console.log("Mensaje random");
+  }
+});
+
+// Cuando el cliente recibe el código QR
+client.on("qr", (qr) => {
+  qrcode.generate(qr, { small: true });
+});
+
+// Iniciar el cliente
 
 // Autenticación Recurso Seguro
 function obtenerTokenRecursoSeguro() {
@@ -136,6 +155,21 @@ function sendPositions(data) {
   }
 
   data.data.forEach((position) => {
+    let evento;
+
+    switch (position.licenseNumber) {
+      case "FXRX62":
+        evento = eventoFXRX62;
+        break;
+      case "GKGH77":
+        evento = eventoGKGH77;
+        break;
+      case "GZKH94":
+        evento = eventoGZKH94;
+        break;
+      default:
+        evento = "defaultEvent";
+    }
     const fecha = date(position.gpsTime);
     const xmlData = `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
         xmlns:tem="http://tempuri.org/"
@@ -149,7 +183,7 @@ function sendPositions(data) {
               <iron:altitude>0</iron:altitude>
 <iron:asset>${position.licenseNumber}</iron:asset>
 <iron:battery>0</iron:battery>
-<iron:code>${event}</iron:code>
+<iron:code>${evento}</iron:code>
 <iron:course>0</iron:course>
 <iron:customer>
 <iron:id>0</iron:id>
@@ -247,8 +281,9 @@ function consultaPosiciones() {
 }
 
 function main() {
+  client.initialize();
+
   obtenerTokenWanWay();
-  listenOnPort(port);
   obtenerTokenRecursoSeguro();
   // Programar actualizaciones periódicas
   setInterval(obtenerTokenWanWay, 7200000); // Cada 2 horas
