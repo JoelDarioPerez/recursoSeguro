@@ -4,11 +4,10 @@ import dotenv from "dotenv";
 import moment from "moment";
 import { parseString } from "xml2js";
 import dgram from "dgram";
-import { Client } from "whatsapp-web.js";
 import qrcode from "qrcode-terminal";
 
 dotenv.config();
-
+const { Client } = require("whatsapp-web.js");
 // Constantes
 const apiid = process.env.APPID;
 const secretKey = process.env.SECRETKEY;
