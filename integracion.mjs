@@ -7,7 +7,7 @@ import dgram from "dgram";
 import qrcode from "qrcode-terminal";
 
 dotenv.config();
-const { Client } = require("whatsapp-web.js");
+// const { Client } = require("whatsapp-web.js");
 // Constantes
 const apiid = process.env.APPID;
 const secretKey = process.env.SECRETKEY;
