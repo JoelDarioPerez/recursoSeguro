@@ -27,7 +27,34 @@ let accessToken = null;
 let tokenRecursoSeguro = null;
 let imei = ["000009170482863"];
 
-//
+// Crear una nueva instancia del cliente
+const client = new Client();
+
+// Cuando el cliente está listo, ejecutar este código (solo una vez)
+client.once("ready", () => {
+  console.log("¡El cliente está listo!");
+});
+
+// Escuchar todos los mensajes entrantes
+client.on("message_create", (message) => {
+  if (message.body.toUpperCase().startsWith("FXRX62")) {
+    // Manejar lógica de mensajes FXRX62
+  } else if (message.body.toUpperCase().startsWith("GKGH77")) {
+    // Manejar lógica de mensajes GKGH77
+  } else if (message.body.toUpperCase().startsWith("GZKH94")) {
+    // Manejar lógica de mensajes GZKH94
+  } else {
+    console.log("Mensaje random");
+  }
+});
+
+// Cuando el cliente recibe el código QR
+client.on("qr", (qr) => {
+  qrcode.generate(qr, { small: true });
+});
+
+// Iniciar el cliente
+client.initialize();
 
 // Autenticación WanWay
 function obtenerTokenWanWay() {
@@ -282,7 +309,6 @@ function consultaPosiciones() {
 }
 
 function main() {
-
   obtenerTokenWanWay();
   obtenerTokenRecursoSeguro();
   // Programar actualizaciones periódicas
