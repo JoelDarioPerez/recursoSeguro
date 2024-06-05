@@ -5,9 +5,9 @@ import moment from "moment";
 import { parseString } from "xml2js";
 import dgram from "dgram";
 import qrcode from "qrcode-terminal";
+import { Client } from "whatsapp-web.js";
 
 dotenv.config();
-// const { Client } = require("whatsapp-web.js");
 // Constantes
 const apiid = process.env.APPID;
 const secretKey = process.env.SECRETKEY;
@@ -49,14 +49,22 @@ client.once("ready", () => {
 // Escuchar todos los mensajes entrantes
 client.on("message_create", (message) => {
   if (message.body.toUpperCase().startsWith("FXRX62")) {
-    // Manejar lógica de mensajes FXRX62
+    let arraydeDatos = message.body.split(",");
+    eventoFXRX62 = arraydeDatos[1];
+    message.reply("Evento FXRX62 recibido y almacenado.");
   } else if (message.body.toUpperCase().startsWith("GKGH77")) {
-    // Manejar lógica de mensajes GKGH77
+    let arraydeDatos = message.body.split(",");
+    eventoGKGH77 = arraydeDatos[1];
+    message.reply("Evento GKGH77 recibido y almacenado.");
   } else if (message.body.toUpperCase().startsWith("GZKH94")) {
-    // Manejar lógica de mensajes GZKH94
+    let arraydeDatos = message.body.split(",");
+    eventoGZKH94 = arraydeDatos[1];
+    message.reply("Evento GZKH94 recibido y almacenado.");
   } else {
-    console.log("Mensaje random");
+    console.log(message.body);
   }
+
+  console.log(`${eventoFXRX62} ${eventoGKGH77} ${eventoGZKH94}`);
 });
 
 // Cuando el cliente recibe el código QR
